@@ -1,0 +1,15 @@
+Mario_and_Enemies.png
+size:512,64
+repeat:none
+big_mario
+bounds:2,30,336,32
+fireball
+bounds:2,2,32,8
+goomba
+bounds:228,12,48,16
+little_mario
+bounds:2,12,224,16
+mushroom
+bounds:438,46,16,16
+turtle
+bounds:340,38,96,24
