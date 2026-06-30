@@ -10,12 +10,15 @@ import com.example.supermario.sprites.Brick;
 import com.example.supermario.sprites.Coin;
 
 public class B2WorldCreator {
-    public B2WorldCreator(World world, TiledMap map){
-        BodyDef bdef = new BodyDef();
-        PolygonShape shape = new PolygonShape();
-        FixtureDef fdef = new FixtureDef();
-        Body body;
+    private BodyDef bdef;
+    private FixtureDef fdef;
 
+    public B2WorldCreator(World world, TiledMap map){
+        bdef = new BodyDef();
+        fdef = new FixtureDef();
+        PolygonShape shape = new PolygonShape();
+        Body body;
+    //ground
         for(MapObject object: map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
@@ -29,8 +32,7 @@ public class B2WorldCreator {
 
             body.createFixture(fdef);
         }
-
-        //create pipe bodies
+//pipes
         for(MapObject object: map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)){
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
 

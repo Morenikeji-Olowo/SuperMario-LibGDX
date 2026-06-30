@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.example.supermario.screens.PlayScreen;
+import com.example.supermario.screens.StartMenu;
 
 import java.security.PublicKey;
 import java.util.Stack;
@@ -15,7 +16,7 @@ import java.util.Stack;
 public class SuperMario extends Game {
     public static final int V_WIDTH = 400;
     public static final int V_HEIGHT = 208;
-    public static final float PPM =  100; //pixels per metet
+    public static final float PPM =  100;
 
     public static final short DEFAULT_BIT =1;
     public static final short MARIO_BIT = 2;
@@ -23,7 +24,6 @@ public class SuperMario extends Game {
     public static final short COIN_BIT = 8;
     public static final short DESTROY_BIT = 16;
     public SpriteBatch batch;
-    private Texture image;
 
     public static AssetManager manager;
 
@@ -32,11 +32,13 @@ public class SuperMario extends Game {
         batch = new SpriteBatch();
         manager = new AssetManager();
         manager.load("audio/music/mario_music.ogg", Music.class);
+        manager.load("audio/music/start_menu_loading.mp3", Music.class);
         manager.load("audio/sounds/coin.wav",  Sound.class);
         manager.load("audio/sounds/bump.wav",  Sound.class);
         manager.load("audio/sounds/breakblock.wav",  Sound.class);
+        manager.load("audio/sounds/game_over.mp3",  Sound.class);
         manager.finishLoading();
-        setScreen(new PlayScreen(this));
+        setScreen(new StartMenu(this));
     }
 
     @Override
@@ -48,6 +50,5 @@ public class SuperMario extends Game {
     @Override
     public void dispose() {
         batch.dispose();
-        image.dispose();
     }
 }

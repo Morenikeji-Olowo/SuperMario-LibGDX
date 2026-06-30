@@ -5,19 +5,16 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
+
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Rectangle;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.example.supermario.SuperMario;
 import com.example.supermario.Tools.B2WorldCreator;
@@ -45,58 +42,78 @@ public class PlayScreen implements Screen {
 
     private Music music;
 
-    public PlayScreen(SuperMario game){
+    public PlayScreen(SuperMario game) {
         atlas = new TextureAtlas("Mario_and_Enemies.atlas");
         this.game = game;
         gameCam = new OrthographicCamera();
-        gamePort = new FitViewport(SuperMario.V_WIDTH / SuperMario.PPM, SuperMario.V_HEIGHT/SuperMario.PPM, gameCam);
+        gamePort = new FitViewport(SuperMario.V_WIDTH / SuperMario.PPM, SuperMario.V_HEIGHT / SuperMario.PPM, gameCam);
         hud = new Hud(game.batch);
 
         mapLoader = new TmxMapLoader();
         map = mapLoader.load("level1.tmx");
-        renderer = new OrthogonalTiledMapRenderer(map, 1/SuperMario.PPM);
-        gameCam.position.set(gamePort.getWorldWidth()/2, gamePort.getWorldHeight()/2, 0);
+        renderer = new OrthogonalTiledMapRenderer(map, 1 / SuperMario.PPM);
+        gameCam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
-        world = new World(new Vector2(0,-10 ), true);
+
+        world = new World(new Vector2(0, -10), true);
         player = new Mario(world, this);
         b2dr = new Box2DDebugRenderer();
         new B2WorldCreator(world, map);
-
         world.setContactListener(new WorldContactListener());
 
         music = SuperMario.manager.get("audio/music/mario_music.ogg", Music.class);
         music.setLooping(true);
         music.play();
     }
-    public TextureAtlas getAtlas(){
+
+    public TextureAtlas getAtlas() {
         return atlas;
     }
+
     @Override
     public void show() {
 
     }
-    public void handleInput(float dt){
-        if(Gdx.input.isKeyJustPressed(Input.Keys.UP)){
-            player.b2body.applyLinearImpulse(new Vector2(0,4f), player.b2body.getWorldCenter(), true);
+
+    public void handleInput(float dt) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            player.b2body.applyLinearImpulse(new Vector2(0, 4f), player.b2body.getWorldCenter(), true);
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) && player.b2body.getLinearVelocity().x <= 2){
-            player.b2body.applyLinearImpulse(new Vector2(0.1f,0), player.b2body.getWorldCenter(), true);
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && player.b2body.getLinearVelocity().x <= 2) {
+            player.b2body.applyLinearImpulse(new Vector2(0.1f, 0), player.b2body.getWorldCenter(), true);
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT) && player.b2body.getLinearVelocity().x >= -2){
-            player.b2body.applyLinearImpulse(new Vector2(-0.1f,0), player.b2body.getWorldCenter(), true);
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && player.b2body.getLinearVelocity().x >= -2) {
+            player.b2body.applyLinearImpulse(new Vector2(-0.1f, 0), player.b2body.getWorldCenter(), true);
         }
     }
 
-    public void update(float dt){
-    handleInput(dt);
-    world.step(1/60f, 6, 2);
+    public void update(float dt) {
+        handleInput(dt);
+        world.step(1 / 60f, 6, 2);
 
-    player.update(dt);
-    hud.update(dt);
-    gameCam.position.x = player.b2body.getPosition().x;
-    gameCam.update();
-    renderer.setView(gameCam);
+        player.update(dt);
+        if (player.b2body.getPosition().y < 0) {
+            music.stop();
+            game.setScreen(new GameOverScreen(game));
+        }
+        hud.update(dt);
+        gameCam.position.x = player.b2body.getPosition().x;
+
+        float mapWidth = map.getProperties().get("width", Integer.class)
+            * map.getProperties().get("tilewidth", Integer.class)
+            / SuperMario.PPM;
+
+        float halfWidth = gamePort.getWorldWidth() / 2f;
+
+        if(gameCam.position.x - halfWidth < 0)
+            gameCam.position.x = halfWidth;
+
+        if(gameCam.position.x + halfWidth > mapWidth)
+            gameCam.position.x = mapWidth - halfWidth;
+        gameCam.update();
+        renderer.setView(gameCam);
     }
+
     @Override
     public void render(float dt) {
         update(dt);
@@ -116,7 +133,7 @@ public class PlayScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-    gamePort.update(width, height);
+        gamePort.update(width, height);
     }
 
     @Override

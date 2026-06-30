@@ -11,6 +11,7 @@ import com.example.supermario.scenes.Hud;
 
 public class Coin extends InteractiveTileObject{
     private static TiledMapTileSet tileSet;
+
     private final int BLANK_COIN = 28;
 
     public Coin(World world, TiledMap map, Rectangle bounds){
@@ -31,6 +32,5 @@ public class Coin extends InteractiveTileObject{
         }
         getCell().setTile(tileSet.getTile(BLANK_COIN));
         Hud.addScore(100);
-
     }
 }
